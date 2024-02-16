@@ -32,10 +32,10 @@ module.exports.signin = async (req, res, next) => {
 };
 module.exports.google = async (req, res, next) => {
   const { name, email, photo } = req.body;
-
+  console.log(name, email, photo);
   try {
     const user = await User.findOne({ email });
-    console.log(email);
+    // console.log(email);
     if (user) {
       console.log("first");
       const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET);
