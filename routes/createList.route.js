@@ -11,4 +11,5 @@ router.post("/create-list", verifyToken, createListing);
 router.delete("/delete-list/:id", verifyToken, deleteListing);
 router.post("/update-list/:id", verifyToken, updateListing);
 router.get("/get-listing/:id", verifyToken, getListing);
+router.get("/get-listing", getListing);
 module.exports = router;
