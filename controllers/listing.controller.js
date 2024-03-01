@@ -100,7 +100,7 @@ module.exports.getListings = async (req, res, next) => {
       .sort({ [sort]: order })
       .limit(limit)
       .skip(skip);
-    console.log(listings);
+
     return res.status(200).json(listings);
   } catch (error) {
     next(error);
