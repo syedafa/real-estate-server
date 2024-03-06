@@ -2,6 +2,7 @@ const User = require("../model/user.model");
 const jwt = require("jsonwebtoken");
 const bcryptjs = require("bcryptjs");
 const { errorHandler } = require("../utils/error");
+const nodemailer = require("nodemailer");
 module.exports.signup = async (req, res, next) => {
   const { username, email, password } = req.body;
   const hashedPassword = bcryptjs.hashSync(password, 10);
@@ -75,4 +76,66 @@ module.exports.signOut = async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+};
+module.exports.forgetPassword = async (req, res, next) => {
+  const { email } = req.body;
+
+  try {
+    const validUser = await User.findOne({ email });
+    console.log(validUser);
+    if (!validUser) return next(errorHandler(404, "User Not Found"));
+    const token = jwt.sign({ id: validUser._id }, process.env.JWT_SECRET, {
+      expiresIn: "1d",
+    });
+    let transporter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "afwaan3@gmail.com",
+        pass: process.env.EMAIL_PASSWORD,
+      },
+    });
+
+    let mailOptions = {
+      from: "youremail@gmail.com",
+      to: validUser.email,
+      subject: "reset password",
+      text: `http://127.0.0.1:5173/reset-password/${validUser._id}/${token}`,
+    };
+
+    transporter.sendMail(mailOptions, function (error, info) {
+      if (error) {
+        console.log(error);
+      } else {
+        console.log("Email sent: " + info.response);
+      }
+    });
+    res.status(200).json({
+      token: token,
+      id: validUser._id,
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+module.exports.resetPassword = async (req, res, next) => {
+  const { id, token } = req.params;
+  const { password } = req.body;
+
+  if (!token) return next(errorHandler(401, "Unauthorized"));
+  jwt.verify(token, process.env.JWT_SECRET, async (err, user) => {
+    if (err) return next(errorHandler(403, "forbidden"));
+    const hashedPassword = bcryptjs.hashSync(password, 10);
+    const newUser = await User.findByIdAndUpdate(
+      id,
+      {
+        $set: {
+          password: hashedPassword,
+        },
+      },
+      { new: true }
+    );
+
+    res.status(200).json("Password Updated Successfully");
+  });
 };

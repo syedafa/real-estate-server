@@ -12,24 +12,28 @@ module.exports.updateUser = async (req, res, next) => {
   if (req.user.id !== req.params.id)
     return next(errorHandler(401, "You can only update your account"));
   try {
-    if (req.body.password) {
-      console.log(req.body.password);
-      hasedPassword = bcryptjs.hashSync(req.body.password, 10);
-    }
+    // const updateUser = req.body;
+    // console.log(updateUser);
+
+    // if (req.body.password) {
+    //   console.log(req.body.password);
+    //   hasedPassword = bcryptjs.hashSync(req.body.password, 10);
+    // }
     const updatedUser = await User.findByIdAndUpdate(
       req.params.id,
       {
         $set: {
           username: req.body.username,
           email: req.body.email,
-          password: hasedPassword,
           avathar: req.body.avathar,
         },
       },
       { new: true }
     );
-    const { password, ...rest } = updatedUser._doc;
-    res.status(200).json(rest);
+    // const { password, ...rest } = updatedUser._doc;
+    // const updatingUser = await User.findById(req.params.id);
+    // console.log(updatingUser);
+    res.status(200).json(updatedUser);
   } catch (error) {
     next(error);
   }
