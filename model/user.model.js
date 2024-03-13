@@ -18,6 +18,10 @@ const userSchema = new mongoose.Schema({
     default:
       "https://www.shutterstock.com/image-vector/vector-flat-illustration-grayscale-avatar-600nw-2264922221.jpg",
   },
+  verified: {
+    type: String,
+    default: false,
+  },
 });
 
 const User = mongoose.model("User", userSchema);

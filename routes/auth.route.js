@@ -6,9 +6,11 @@ const {
   signOut,
   forgetPassword,
   resetPassword,
+  signUpVerification,
 } = require("../controllers/auth.controller.js");
 const router = express.Router();
 router.post("/sign-up", signup);
+router.get("/verify/:id/:token", signUpVerification);
 router.post("/sign-in", signin);
 router.post("/google", google);
 router.post("/forget-password", forgetPassword);
